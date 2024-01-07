@@ -45,6 +45,7 @@ model User {
   state String
   address String
   registerNumber String
+ 
   hashpassword String 
     createdAt       DateTime @default(now())
   updatedAt       DateTime @updatedAt
