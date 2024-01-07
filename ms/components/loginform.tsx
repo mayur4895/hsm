@@ -22,7 +22,7 @@ import {
   
 
 import { Input } from "@/components/ui/input"
-
+import { signIn } from "next-auth/react"
 import { useForm } from "react-hook-form"
 import * as z from "zod"
 import { zodResolver } from "@hookform/resolvers/zod"
@@ -30,6 +30,8 @@ import { useEffect, useState } from "react"
  
 import {  useRouter } from "next/navigation"
 import Link from "next/link"
+import axios from "axios"
+import { useToast } from "./ui/use-toast"
  
  
 
@@ -54,23 +56,46 @@ const formSchema = z.object({
 })
 
 const LoginForm = ()=>{
- 
+  const { toast } = useToast();
  const router = useRouter();
  const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
         hospital_name:"",
         email:"", 
-    password:"",
-     uid:""
+        password:"",
+        uid:""
  
     },
   })
 
-  const isloding = form.formState.isSubmitting;
-   async function onSubmit(values: z.infer<typeof formSchema>) {
-      
-   console.log(values);
+  const  [isloding , setisloding] = useState(false);
+
+   async function onSubmit(values: z.infer<typeof formSchema>) { 
+    setisloding(true);
+    signIn('credentials',{
+   ...values,
+   redirect:false
+  }).then((callback:any)=>{
+    setisloding(false);
+   if(callback?.ok){
+    toast({
+      variant:"sucess",
+     title:"Login Successful"
+    }) 
+    router.refresh(); 
+    router.push("/");
+   }
+   if(callback?.error){
+     toast({  
+      variant:"destructive",
+     title:"Invalid Credentials",
+      description:"Login Faild!", 
+     }) 
+     
+    }
+   
+  }) 
    
   }
 
@@ -157,7 +182,7 @@ if(!isopen){
           </div>
  
     <div className="mt-5 flex justify-between items-center">
-    <Button type="submit" className=" w-auto" >Login</Button>
+    <Button type="submit" className=" w-auto" >{isloding?"Loding...":"Login"}</Button>
     <p className="text-gray-500 text-sm">Not have an account? <Link href={"/register"} className="text-rose-500">Register</Link></p>
     </div>
    

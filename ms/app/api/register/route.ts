@@ -7,6 +7,9 @@ export async function POST(
     request :Request
 ) {
 
+
+    try {
+       
     const body = await request.json();
 
 
@@ -24,8 +27,18 @@ export async function POST(
     password, 
     } = body;
 
- const hashpassword = await bcrypt.hash(password,12)
+ const hashpassword = await bcrypt.hash(password,12);
+
+    const emailexist = await prisma.user.findUnique({
+        where:{
+            email:email
+        }
+    })
  
+if(emailexist){
+ throw new Error("Email alerady exists");
+}
+
     const user = await prisma.user.create({
         data:{
              name:hospital_name,
@@ -44,5 +57,9 @@ export async function POST(
 
 
 
-    return NextResponse.json(user);
-}
+    return NextResponse.json(user , {status:200});
+ 
+    } catch (error) {
+     throw new Error("Server Error");
+    }
+} 

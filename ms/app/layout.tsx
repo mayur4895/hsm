@@ -1,6 +1,8 @@
 import type { Metadata } from 'next'
 import { Poppins } from 'next/font/google'
 import './globals.css'
+import { Toaster } from "@/components/ui/toaster"
+ 
 
 const font = Poppins({ weight:["200","300","400","500","600","700","800","900"],subsets: ['latin'] })
 
@@ -16,7 +18,12 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en">
-      <body className={font.className}>{children}</body>
+      <body className={font.className}>
+        <main> 
+        {children}
+        </main>
+      <Toaster />
+      </body>
     </html>
   )
 }

@@ -89,6 +89,7 @@ const SignupForm = ()=>{
     password:"",
     confirm_password:"" 
     },
+  
   })
   
 const  [isloding , setisloding] = useState(false);
@@ -96,19 +97,22 @@ const  [isloding , setisloding] = useState(false);
    async function onSubmit(values: z.infer<typeof formSchema>) {
     setisloding(true);
     axios.post('/api/register', values).then(()=>{
-    form.reset();  
+      form.reset();
+     router.refresh(); 
     toast({
+      variant:"sucess",
       title: "Registed",
-      description: "login your account",  
-      
-    })
+      description: "login your account",   
+    }) 
+
+    router.push("/login");
+
+    }).catch((err)=>{   
  
-    }).catch((err)=>{  
-  
-      toast({
-        title: "Uh oh! Something went wrong.",
-        description: "server error",  
-        
+      toast({ 
+        variant:"destructive",
+        title: "Uh oh! Something went wrong." ,
+        description: "server error",   
       }) 
         
     }) .finally(()=>{
